@@ -34,6 +34,11 @@ vim.opt.splitright = true -- Put new windows right of current
 vim.opt.splitkeep = "cursor"
 vim.opt.mouse = "n"
 vim.opt.clipboard = "unnamedplus"
+vim.g.lazyvim_python_lsp = "pyright"
+vim.g.lazyvim_python_ruff = "ruff_lsp"
+-- vim.opt.python_host_prog = $PYENV_ROOT.'/versions/neovim2/bin/python'
+-- vim.opt.python3_host_prog = $PYENV_ROOT.'/versions/neovim3/bin/python'
+vim.g.mkdp_theme = "light"
 
 -- Undercurl
 vim.cmd([[let &t_Cs = "\e[4:3m"]])
