@@ -138,7 +138,11 @@ return {
     optional = true,
     opts = {
       formatters_by_ft = {
-        rust = { "rustfmt" },
+        ["javascript"] = { "biome" },
+        ["javascriptreact"] = { "biome" },
+        ["typescript"] = { "biome" },
+        ["typescriptreact"] = { "biome" },
+        ["rust"] = { "rustfmt" },
       },
     },
   },

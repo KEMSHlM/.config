@@ -9,6 +9,7 @@ return {
         "typescript-language-server",
         "codelldb",
         "rustfmt",
+        "biome",
       })
     end,
   },
