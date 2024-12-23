@@ -36,8 +36,7 @@ vim.opt.mouse = "n"
 vim.opt.clipboard = "unnamedplus"
 vim.g.lazyvim_python_lsp = "pyright"
 vim.g.lazyvim_python_ruff = "ruff_lsp"
--- vim.opt.python_host_prog = $PYENV_ROOT.'/versions/neovim2/bin/python'
--- vim.opt.python3_host_prog = $PYENV_ROOT.'/versions/neovim3/bin/python'
+vim.g.python3_host_prog = "$HOME/.pyenv/shims/python"
 vim.g.mkdp_theme = "light"
 
 -- Undercurl
