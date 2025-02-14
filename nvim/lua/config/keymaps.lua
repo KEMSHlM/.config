@@ -2,61 +2,57 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 
-local keymap = vim.keymap
-local opts = { noremap = true, silent = true }
+local wk = require("which-key")
 
 -- my settings
-keymap.set("x", "p", '"_dP')
-keymap.set("n", "n", "nzz")
-keymap.set("n", "N", "Nzz")
-
--- Increment/decrement
-keymap.set("n", "+", "<C-a>")
-keymap.set("n", "-", "<C-x>")
-
--- Delete a word backwards
-keymap.set("n", "dw", "vb_d")
-
--- Select all
-keymap.set("n", "<C-a>", "gg<S-v>G")
-
--- Jumplist
-keymap.set("n", "te", "tabedit", opts)
-keymap.set("n", "<tab>", ":tabnext<Return>", opts)
-keymap.set("n", "<s-tab>", ":tabprev<Return>", opts)
-
--- split window
-keymap.set("n", "ss", ":split<Return>", opts)
-keymap.set("n", "sv", ":vsplit<Return>", opts)
-
--- Move window
-keymap.set("n", "sh", "<C-w>h")
-keymap.set("n", "sk", "<C-w>k")
-keymap.set("n", "sj", "<C-w>j")
-keymap.set("n", "sl", "<C-w>l")
-
--- Resize window
-keymap.set("n", "<C-w><left>", "<C-w><")
-keymap.set("n", "<C-w><right>", "<C-w>>")
-keymap.set("n", "<C-w><up>", "<C-w>+")
-keymap.set("n", "<C-w><down>", "<C-w>-")
-
--- Diagnotics
-keymap.set("n", "<leader>j", function()
-  vim.diagnostic.goto_next()
-end, opts)
-
--- Toggle inlay hints
-keymap.set("n", "<leader>i", function()
-  require("scripts.lsp").toggleInlayHints()
-end)
-
--- setup screenshot
-keymap.set("n", "<leader>t", function()
-  require("scripts.screenshot").insertScreenshot()
-end)
-
--- Show normal mode keymaps
-keymap.set("n", "?", function()
-  require("which-key").show("", { mode = "n", auto = true })
-end)
+wk.add({
+  {
+    mode = { "n" },
+    { "n", "nzz", desc = "Next Search Result" },
+    { "N", "Nzz", desc = "Previoue Search Result" },
+    { "+", "<C-a>", desc = "Increment" },
+    { "-", "<C-x>", desc = "Decrement" },
+    { "<C-a>", "gg<S-v>G", desc = "Select All" },
+    { "s", group = "Window" },
+    { "ss", "<cmd>split<cr>", desc = "Split Horizontal Window" },
+    { "sv", "<cmd>vsplit<cr>", desc = "Split Vertical Window" },
+    { "sh", "<C-w>h", desc = "Move Window Left" },
+    { "sk", "<C-w>k", desc = "Move Window Up" },
+    { "sj", "<C-w>j", desc = "Move Window Down" },
+    { "sl", "<C-w>l", desc = "Move Window Right" },
+    { "<tab>", "<cmd>tabnext<cr>", desc = "Next Tab" },
+    { "<s-tab>", "<cmd>tabprev<cr>", desc = "Privious Tab" },
+    { "<C-w><left>", "<C-w><", desc = "Resize Window Left" },
+    { "<C-w><right>", "<C-w>>", desc = "Resize Window Right" },
+    { "<C-w><up>", "<C-w>+", desc = "Resize Window Up" },
+    { "<C-w><down>", "<C-w>-", desc = "Resize Window Down" },
+    {
+      "<leader>j",
+      function()
+        vim.diagnostic.goto_next()
+      end,
+      desc = "Diagnotics",
+    },
+    {
+      "<leader>t",
+      function()
+        require("scripts.screenshot").insertScreenshot()
+      end,
+      desc = "Take Screenshot",
+      cond = function()
+        return vim.bo.filetype == "markdown"
+      end,
+    },
+    {
+      "?",
+      function()
+        require("which-key").show("")
+      end,
+      desc = "Show Keys",
+    },
+  },
+  {
+    mode = { "x" },
+    { "p", "_dP", desc = "Paste" },
+  },
+})

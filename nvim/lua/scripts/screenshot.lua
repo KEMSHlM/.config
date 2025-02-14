@@ -1,8 +1,20 @@
 local M = {}
 
 -- モジュールの初期設定関数
--- 現状では何も設定していませんが、将来的な拡張のために記載
-M.setup = function() end
+M.setup = function()
+  -- Markdownファイルでのみコマンドを利用可能にする
+  vim.api.nvim_create_autocmd("FileType", {
+    pattern = "markdown",
+    callback = function()
+      -- コマンドを登録
+      vim.api.nvim_buf_create_user_command(0, "Screenshot", function()
+        M.insertScreenshot()
+      end, {
+        desc = "Take and insert screenshot in markdown file",
+      })
+    end,
+  })
+end
 
 -- カーソルの下にある単語を取得する関数
 local function get_word_under_cursor()
@@ -26,6 +38,11 @@ end
 
 -- スクリーンショットを撮影してMarkdownファイルに挿入するメイン関数
 M.insertScreenshot = function()
+  -- Markdownファイルでない場合は実行しない
+  if vim.bo.filetype ~= "markdown" then
+    vim.notify("Error: This command can only be used in Markdown files", vim.log.levels.ERROR)
+    return
+  end
   -- スクリーンショットを保存するディレクトリのパスを組み立て
   local screenshotDir = vim.fn.expand("%:p:h") .. "/.img"
   -- スクリーンショットのファイル名

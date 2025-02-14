@@ -129,15 +129,6 @@ return {
         desc = "Lists Function names, variables, from Treesitter",
       },
       {
-        ";n",
-        function()
-          local builtin = require("telescope")
-          builtin.load_extension("notify")
-          builtin.extensions.notify.notify()
-        end,
-        desc = "Lists notifications",
-      },
-      {
         "sf",
         function()
           local telescope = require("telescope")
@@ -165,7 +156,8 @@ return {
       local actions = require("telescope.actions")
       local fb_actions = require("telescope").extensions.file_browser.actions
 
-      opts.defaults = vim.tbl_deep_extend("force", opts.defaults, {
+      opts = opts or {}
+      opts.defaults = vim.tbl_deep_extend("force", opts.defaults or {}, {
         wrap_results = true,
         layout_strategy = "horizontal",
         layout_config = { prompt_position = "top" },
@@ -175,7 +167,7 @@ return {
           n = {},
         },
       })
-      opts.pickers = {
+      opts.pickers = opts.pickers or {
         diagnostics = {
           theme = "ivy",
           initial_mode = "normal",
@@ -184,7 +176,7 @@ return {
           },
         },
       }
-      opts.extensions = {
+      opts.extensions = opts.extensions or {
         file_browser = {
           theme = "dropdown",
           -- disables netrw and use telescope-file-browser in its place
@@ -199,12 +191,12 @@ return {
                 vim.cmd("startinsert")
               end,
               ["<C-u>"] = function(prompt_bufnr)
-                for _ = 1, 10 do
+                for i = 1, 10 do
                   actions.move_selection_previous(prompt_bufnr)
                 end
               end,
               ["<C-d>"] = function(prompt_bufnr)
-                for _ = 1, 10 do
+                for i = 1, 10 do
                   actions.move_selection_next(prompt_bufnr)
                 end
               end,
@@ -244,6 +236,13 @@ return {
         end,
         desc = "copy selection to system clipboard (visual mode)",
       },
+    },
+  },
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    opts = {
+      preset = "classic",
     },
   },
 }

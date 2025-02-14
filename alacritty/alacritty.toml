@@ -2,10 +2,13 @@ import = ["/Users/kenshin/.config/alacritty/themes/themes/{onedark}.toml"]
 live_config_reload = true
 
 [env]
-TERM = "tmux-256color"
+TERM = "alacritty"
 
 [font]
 size = 16.0
+
+[mouse]
+hide_when_typing = true
 
 [font.bold]
 family = "Hack Nerd Font"
@@ -22,11 +25,6 @@ style = "Italic"
 [font.normal]
 family = "Hack Nerd Font"
 style = "Regular"
-
-[[keyboard.bindings]]
-action = "ToggleViMode"
-key = "T"
-mods = "Shift|Control"
 
 [[keyboard.bindings]]
 chars = "\u0017"
@@ -60,4 +58,4 @@ opacity = 0.8
 
 [window.padding]
 x = 10
-y = 9
+y = 13
