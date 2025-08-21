@@ -73,12 +73,39 @@ return {
           },
         },
         tsserver = {
-          root_dir = function(...)
-            return require("lspconfig.util").root_pattern(".git")(...)
+          root_dir = function(fname)
+            local util = require("lspconfig.util")
+            -- pnpm workspaceのルートを探す
+            local monorepo_root = util.root_pattern("pnpm-workspace.yaml")(fname)
+            if monorepo_root then
+              -- ワークスペース内のtsconfig.jsonを優先
+              local workspace_root = util.root_pattern("tsconfig.json")(fname)
+              if workspace_root and workspace_root:find(monorepo_root, 1, true) then
+                return workspace_root
+              end
+            end
+            -- フォールバック
+            return util.root_pattern("package.json", "tsconfig.json", ".git")(fname)
           end,
           single_file_support = false,
+          init_options = {
+            hostInfo = "neovim",
+            preferences = {
+              includeCompletionsForModuleExports = true,
+              includePackageJsonAutoImports = "on",
+            },
+          },
           settings = {
             typescript = {
+              preferences = {
+                includePackageJsonAutoImports = "on",
+                importModuleSpecifierPreference = "relative",
+                includeCompletionsForModuleExports = true,
+              },
+              tsserver = {
+                useSeparateSyntaxServer = true,
+                maxTsServerMemory = 8192,
+              },
               inlayHints = {
                 includeInlayParameterNameHints = "literal",
                 includeInlayParameterNameHintsWhenArgumentMatchesName = false,
@@ -90,6 +117,11 @@ return {
               },
             },
             javascript = {
+              preferences = {
+                includePackageJsonAutoImports = "on",
+                importModuleSpecifierPreference = "relative",
+                includeCompletionsForModuleExports = true,
+              },
               inlayHints = {
                 includeInlayParameterNameHints = "all",
                 includeInlayParameterNameHintsWhenArgumentMatchesName = false,
@@ -99,6 +131,9 @@ return {
                 includeInlayFunctionLikeReturnTypeHints = true,
                 includeInlayEnumMemberValueHints = true,
               },
+            },
+            completions = {
+              completeFunctionCalls = true,
             },
           },
         },
