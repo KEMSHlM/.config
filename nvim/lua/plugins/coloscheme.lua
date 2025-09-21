@@ -12,19 +12,12 @@ return {
   "catppuccin/nvim",
   lazy = true,
   name = "catppuccin",
-  opts = function(_, opts)
-    -- Temporary fix for bufferline integration
-    local module = require("catppuccin.groups.integrations.bufferline")
-    if module then
-      module.get = module.get_theme
-    end
-    
-    opts.transparent_background = true
-    opts.integrations = {
+  opts = {
+    transparent_background = true,
+    integrations = {
       aerial = true,
       alpha = true,
       cmp = true,
-      blink_cmp = true,
       dashboard = true,
       flash = true,
       fzf = true,
@@ -58,23 +51,15 @@ return {
       treesitter = true,
       treesitter_context = true,
       which_key = true,
-    }
-    
-    return opts
-  end,
+    },
+  },
   specs = {
     {
       "akinsho/bufferline.nvim",
       optional = true,
       opts = function(_, opts)
         if (vim.g.colors_name or ""):find("catppuccin") then
-          local has_catppuccin, catppuccin_bufferline = pcall(require, "catppuccin.groups.integrations.bufferline")
-          if has_catppuccin and catppuccin_bufferline.get_theme then
-            opts.highlights = catppuccin_bufferline.get_theme()
-          elseif has_catppuccin and catppuccin_bufferline.get then
-            -- Fallback for older versions
-            opts.highlights = catppuccin_bufferline.get()
-          end
+          opts.highlights = require("catppuccin.groups.integrations.bufferline").get()
         end
       end,
     },

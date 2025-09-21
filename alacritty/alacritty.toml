@@ -1,6 +1,3 @@
-import = ["/Users/kenshin/.config/alacritty/themes/themes/{onedark}.toml"]
-live_config_reload = true
-
 [env]
 TERM = "alacritty"
 
@@ -47,8 +44,8 @@ key = "C"
 mode = "Vi"
 mods = "Control"
 
-[shell]
-args = ["-l", "-c", "/opt/homebrew/bin/tmux"]
+[terminal.shell]
+args = ["-l", "-c", "/bin/tmux"]
 program = "/bin/zsh"
 
 [window]
@@ -59,3 +56,9 @@ opacity = 0.8
 [window.padding]
 x = 10
 y = 13
+
+[general]
+live_config_reload = true
+import = ["/home/kemshim/.config/alacritty/themes/themes/onedark.toml"]
+
+[terminal]

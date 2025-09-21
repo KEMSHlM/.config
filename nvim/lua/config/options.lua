@@ -37,6 +37,7 @@ vim.opt.clipboard = "unnamedplus"
 vim.opt.laststatus = 3
 vim.g.lazyvim_python_lsp = "pyright"
 vim.g.lazyvim_python_ruff = "ruff"
+vim.g.python3_host_prog = "$HOME/.pyenv/shims/python"
 vim.g.mkdp_theme = "light"
 vim.g.loaded_perl_provider = 0
 

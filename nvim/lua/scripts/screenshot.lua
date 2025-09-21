@@ -43,7 +43,6 @@ M.insertScreenshot = function()
     vim.notify("Error: This command can only be used in Markdown files", vim.log.levels.ERROR)
     return
   end
-
   -- スクリーンショットを保存するディレクトリのパスを組み立て
   local screenshotDir = vim.fn.expand("%:p:h") .. "/.img"
   -- スクリーンショットのファイル名
@@ -61,73 +60,37 @@ M.insertScreenshot = function()
   if vim.fn.isdirectory(screenshotDir) == 0 then
     local mkdir_result = vim.fn.mkdir(screenshotDir, "p")
     if mkdir_result == 0 then
-      vim.notify("Error: Could not create the screenshot directory: " .. screenshotDir, vim.log.levels.ERROR)
+      vim.notify("Error: Could not create the screenshot directory: " .. screenshotDir)
       return
     else
-      vim.notify("Screenshot directory created: " .. screenshotDir, vim.log.levels.INFO)
+      vim.notify("Screenshot directory created: " .. screenshotDir)
     end
   end
 
   -- OSに応じたスクリーンショットコマンドを選択して実行
   local screenshotCmd = ""
   if vim.fn.has("mac") == 1 then
-    -- より信頼性の高いApple Script経由でスクリーンショットを取得
-    screenshotCmd = [[osascript -e 'tell application "System Events" to keystroke "4" using {command down, shift down}' && sleep 0.5 && ]]
-      .. [[osascript -e 'tell application "System Events" to keystroke "c" using {command down}' && sleep 0.5 && ]]
-      .. [[osascript -e 'do shell script "mkdir -p ']]
-      .. vim.fn.shellescape(screenshotDir)
-      .. [['"; ]]
-      .. [[osascript -e "tell application \"System Events\" to ]]
-      .. [[set the clipboard to (read (the clipboard) as «class PNGf»)" ]]
-      .. [[> ]]
-      .. vim.fn.shellescape(filepath)
+    screenshotCmd = "screencapture -i " .. vim.fn.shellescape(filepath)
   elseif vim.fn.has("unix") == 1 then
     screenshotCmd = "scrot -s " .. vim.fn.shellescape(filepath)
   else
-    vim.notify("Error: Unsupported OS", vim.log.levels.ERROR)
+    vim.notify("Error: Unsupported OS")
     return
   end
 
   -- スクリーンショットコマンドを実行
-  vim.notify("Please select a screen area to capture...", vim.log.levels.INFO)
-
-  -- ユーザーに準備する時間を与える
-  vim.cmd("redraw")
-  vim.fn.timer_start(500, function()
+  if screenshotCmd ~= "" then
     local shellResult = vim.fn.system(screenshotCmd)
     if vim.v.shell_error ~= 0 then
-      vim.notify("Error: Failed to take a screenshot: " .. shellResult, vim.log.levels.ERROR)
+      vim.notify("Error: Failed to take a screenshot." .. shellResult)
       return
     end
+  end
 
-    -- ファイルが実際に作成されたか確認
-    if vim.fn.filereadable(filepath) == 0 then
-      vim.notify(
-        "Error: Screenshot file was not created. The screenshot may have been cancelled.",
-        vim.log.levels.ERROR
-      )
-      return
-    end
-
-    -- ファイルサイズをチェック（空のファイルでないことを確認）
-    local filesize = vim.fn.getfsize(filepath)
-    if filesize <= 0 then
-      vim.notify("Error: Screenshot file is empty or invalid", vim.log.levels.ERROR)
-      -- 空のファイルを削除
-      vim.fn.delete(filepath)
-      return
-    end
-
-    -- 少し待機してファイルが完全に書き込まれたことを確認
-    vim.fn.timer_start(100, function() end)() -- 同期的に100ms待機
-
-    -- Markdownに画像リンクを挿入
-    local relativeFilePath = string.format(".img/%s", fileName)
-    local link_text = string.format('<img src="%s" alt="%s">', relativeFilePath, description_name)
-    vim.api.nvim_put({ link_text }, "l", true, true)
-
-    vim.notify("Screenshot inserted successfully", vim.log.levels.INFO)
-  end) -- timer_startのコールバック関数の終わり
+  -- Markdownに画像リンクを挿入
+  local relativeFilePath = string.format(".img/%s", fileName)
+  local link_text = string.format('<img src="%s" alt="%s">', relativeFilePath, descriptionCame)
+  vim.api.nvim_put({ link_text }, "l", true, true)
 end
 
 return M
