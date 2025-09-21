@@ -41,7 +41,7 @@ return {
 
   -- Go forward/backward with square brackets
   {
-    "echasnovski/mini.bracketed",
+    "nvim-mini/mini.bracketed",
     event = "BufReadPost",
     config = function()
       local bracketed = require("mini.bracketed")
@@ -200,21 +200,29 @@ return {
           border = "rounded",
         },
       },
-      claude = {
-        model = "claude-3-5-sonnet-20241022", -- $3/$15, maxtokens=8000
-        -- model = "claude-3-opus-20240229",  -- $15/$75
-        -- model = "claude-3-haiku-20240307", -- $0.25/1.25
-        max_tokens = 8000,
-      },
-      copilot = {
-        model = "gpt-4o-2024-05-13",
-        -- model = "gpt-4o-mini",
-        max_tokens = 4096,
-      },
-      openai = {
-        model = "gpt-4o", -- $2.5/$10
-        -- model = "gpt-4o-mini", -- $0.15/$0.60
-        max_tokens = 4096,
+      providers = {
+        claude = {
+          model = "claude-3-5-sonnet-20241022", -- $3/$15, maxtokens=8000
+          -- model = "claude-3-opus-20240229",  -- $15/$75
+          -- model = "claude-3-haiku-20240307", -- $0.25/1.25
+          extra_request_body = {
+            max_tokens = 8000,
+          },
+        },
+        copilot = {
+          model = "gpt-4o-2024-05-13",
+          -- model = "gpt-4o-mini",
+          extra_request_body = {
+            max_tokens = 4096,
+          },
+        },
+        openai = {
+          model = "gpt-4o", -- $2.5/$10
+          -- model = "gpt-4o-mini", -- $0.15/$0.60
+          extra_request_body = {
+            max_tokens = 4096,
+          },
+        },
       },
     },
     -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`

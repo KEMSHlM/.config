@@ -3,6 +3,8 @@ return {
 
   {
     "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    main = "nvim-treesitter.configs",
     opts = {
       ensure_installed = {
         "astro",
@@ -23,11 +25,19 @@ return {
         "svelte",
         "ninja",
         "rst",
+        "lua",
+        "vim",
+        "vimdoc",
+        "query",
       },
-
-      -- matchup = {
-      -- 	enable = true,
-      -- },
+      sync_install = false,
+      auto_install = true,
+      highlight = {
+        enable = true,
+        disable = { "vim" },
+        additional_vim_regex_highlighting = false,
+      },
+      indent = { enable = true },
 
       -- https://github.com/nvim-treesitter/playground#query-linter
       query_linter = {
@@ -56,8 +66,6 @@ return {
       },
     },
     config = function(_, opts)
-      require("nvim-treesitter.configs").setup(opts)
-
       -- MDX
       vim.filetype.add({
         extension = {
