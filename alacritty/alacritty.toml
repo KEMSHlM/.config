@@ -44,21 +44,17 @@ key = "C"
 mode = "Vi"
 mods = "Control"
 
-[terminal.shell]
-args = ["-l", "-c", "/bin/tmux"]
+[shell]
 program = "/bin/zsh"
+args = ["-l", "-c", "~/.config/alacritty/start-tmux.sh"]
 
 [window]
 decorations = "buttonless"
-dynamic_padding = false
+dynamic_padding = true
 opacity = 0.8
+padding = { x = 8, y = 2 }
 
-[window.padding]
-x = 10
-y = 13
-
-[general]
-live_config_reload = true
-import = ["/home/kemshim/.config/alacritty/themes/themes/onedark.toml"]
-
-[terminal]
+# Colors (One Dark)
+[colors.primary]
+background = '#282c34'
+foreground = '#abb2bf'
