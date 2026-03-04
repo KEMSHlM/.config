@@ -2,22 +2,26 @@
 -- Default autocmds that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/autocmds.lua
 -- Add any additional autocmds here
 
--- Restore <C-j> / <C-k> inside Claude Code terminal so they act as newline/up
+-- Start in insert mode when entering Claude Code terminal
 vim.api.nvim_create_autocmd("TermOpen", {
   pattern = "*",
   callback = function()
-    local buf = vim.api.nvim_get_current_buf()
-    -- Defer to let the buffer name be set by the terminal provider
     vim.defer_fn(function()
-      if not vim.api.nvim_buf_is_valid(buf) then
-        return
-      end
-      local name = vim.api.nvim_buf_get_name(buf)
-      if name:match("claude") then
-        pcall(vim.keymap.del, "t", "<C-j>", { buffer = buf })
-        pcall(vim.keymap.del, "t", "<C-k>", { buffer = buf })
+      local bufname = vim.api.nvim_buf_get_name(0)
+      if bufname:match("claude") and vim.bo.buftype == "terminal" then
+        vim.cmd("startinsert")
       end
     end, 100)
+  end,
+})
+
+-- Stay in normal mode when entering a diff buffer
+vim.api.nvim_create_autocmd("BufWinEnter", {
+  pattern = "*",
+  callback = function()
+    if vim.wo.diff then
+      vim.cmd("stopinsert")
+    end
   end,
 })
 
@@ -60,15 +64,7 @@ vim.api.nvim_create_autocmd({ "BufReadPre" }, {
       "ogg",
       "m4a",
       "wma",
-      -- Image files (large)
-      "png",
-      "jpg",
-      "jpeg",
-      "gif",
-      "bmp",
-      "tiff",
-      "ico",
-      "webp",
+      -- Image files are handled by image.nvim (kitty graphics protocol)
       -- Archive files
       "zip",
       "rar",

@@ -1,3 +1,11 @@
+-- Recover TMUX env var when inside tmux but variable is missing (needed for Snacks.image)
+if vim.env.TERM and vim.env.TERM:find("^tmux") and not vim.env.TMUX then
+  local result = vim.fn.system("tmux display-message -p '#{socket_path},#{pid},0'"):gsub("%s+$", "")
+  if result ~= "" then
+    vim.env.TMUX = result
+  end
+end
+
 vim.g.mapleader = " "
 
 vim.scriptencoding = "utf-8"
@@ -34,6 +42,20 @@ vim.opt.splitright = true -- Put new windows right of current
 vim.opt.splitkeep = "cursor"
 vim.opt.mouse = "n"
 vim.opt.clipboard = "unnamedplus"
+-- SSH: use OSC52 for clipboard sharing with local machine
+if os.getenv("SSH_TTY") then
+  vim.g.clipboard = {
+    name = "OSC 52",
+    copy = {
+      ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+      ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+    },
+    paste = {
+      ["+"] = require("vim.ui.clipboard.osc52").paste("+"),
+      ["*"] = require("vim.ui.clipboard.osc52").paste("*"),
+    },
+  }
+end
 vim.opt.laststatus = 3
 vim.g.lazyvim_python_lsp = "pyright"
 vim.g.lazyvim_python_ruff = "ruff"

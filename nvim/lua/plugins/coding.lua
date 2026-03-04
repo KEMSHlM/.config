@@ -1,4 +1,14 @@
-return {
+ return {
+  -- Claude Code: open diffs in a new tab
+  {
+    "coder/claudecode.nvim",
+    opts = {
+      diff_opts = {
+        open_in_new_tab = true,
+      },
+    },
+  },
+
   -- Incremental rename
   {
     "smjonas/inc-rename.nvim",
@@ -19,6 +29,7 @@ return {
         noremap = true,
         silent = true,
         expr = false,
+        desc = "Refactoring",
       },
     },
     opts = {},

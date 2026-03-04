@@ -1,4 +1,13 @@
 return {
+  -- which-key group for util tools
+  {
+    "folke/which-key.nvim",
+    opts = {
+      spec = {
+        { "<leader>d", group = "Database/Docker" },
+      },
+    },
+  },
   {
     "mgierada/lazydocker.nvim",
     dependencies = { "akinsho/toggleterm.nvim" },
@@ -47,6 +56,13 @@ return {
       open_cmd = nil,
       -- Fixed port for SSH port forwarding
       port = 12500,
+    },
+  },
+  -- Image rendering via Snacks.image (kitty graphics protocol)
+  {
+    "folke/snacks.nvim",
+    opts = {
+      image = {},
     },
   },
 }
