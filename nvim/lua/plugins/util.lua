@@ -41,11 +41,12 @@ return {
     },
   },
   {
-    "timtro/glslView-nvim",
-    ft = "glsl",
+    "chomosuke/typst-preview.nvim",
     opts = {
-      viewer_path = "glslViewer",
-      args = { "-l" },
+      -- Disable automatic browser open (xdg-open fails on remote/headless)
+      open_cmd = nil,
+      -- Fixed port for SSH port forwarding
+      port = 12500,
     },
   },
 }
