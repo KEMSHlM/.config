@@ -7,11 +7,17 @@ vim.api.nvim_create_autocmd("TermOpen", {
   pattern = "*",
   callback = function()
     local buf = vim.api.nvim_get_current_buf()
-    local name = vim.api.nvim_buf_get_name(buf)
-    if name:match("claude") then
-      vim.keymap.del("t", "<C-j>", { buffer = buf })
-      vim.keymap.del("t", "<C-k>", { buffer = buf })
-    end
+    -- Defer to let the buffer name be set by the terminal provider
+    vim.defer_fn(function()
+      if not vim.api.nvim_buf_is_valid(buf) then
+        return
+      end
+      local name = vim.api.nvim_buf_get_name(buf)
+      if name:match("claude") then
+        pcall(vim.keymap.del, "t", "<C-j>", { buffer = buf })
+        pcall(vim.keymap.del, "t", "<C-k>", { buffer = buf })
+      end
+    end, 100)
   end,
 })
 
