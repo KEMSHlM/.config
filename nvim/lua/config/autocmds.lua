@@ -2,28 +2,6 @@
 -- Default autocmds that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/autocmds.lua
 -- Add any additional autocmds here
 
--- Start in insert mode when entering Claude Code terminal
-vim.api.nvim_create_autocmd("TermOpen", {
-  pattern = "*",
-  callback = function()
-    vim.defer_fn(function()
-      local bufname = vim.api.nvim_buf_get_name(0)
-      if bufname:match("claude") and vim.bo.buftype == "terminal" then
-        vim.cmd("startinsert")
-      end
-    end, 100)
-  end,
-})
-
--- Stay in normal mode when entering a diff buffer
-vim.api.nvim_create_autocmd("BufWinEnter", {
-  pattern = "*",
-  callback = function()
-    if vim.wo.diff then
-      vim.cmd("stopinsert")
-    end
-  end,
-})
 
 -- Turn off paste mode when leaving insert
 vim.api.nvim_create_autocmd("InsertLeave", {
