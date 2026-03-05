@@ -59,8 +59,11 @@ return {
     },
   },
   -- Image rendering via Snacks.image (kitty graphics protocol)
+  -- Using fork with fix for image re-rendering on buffer switch (#2634)
   {
     "folke/snacks.nvim",
+    url = "https://github.com/KEMSHlM/snacks.nvim.git",
+    branch = "fix/image-rerender-on-buffer-switch",
     opts = {
       image = {},
     },
