@@ -1,8 +1,6 @@
 #!/bin/zsh
 # claude-switch.sh - claude session manager with preview and send keys
-# Args: session_name
 
-SESSION_NAME="${1:-}"
 TMUX_BIN=$(command -v tmux)
 
 if ! $TMUX_BIN has-session -t "claude" 2>/dev/null; then
@@ -40,11 +38,10 @@ SELECTED=$($TMUX_BIN list-windows -t claude -F "#{window_name} #{pane_current_co
 [ -z "$SELECTED" ] && exit 0
 
 WINDOW=$(echo "$SELECTED" | cut -f1 | sed 's/claude:=//')
-
 [ -z "$WINDOW" ] && exit 0
 
-if [ "$SESSION_NAME" = "claude" ]; then
-  $TMUX_BIN switch-client -t "claude:$WINDOW"
+if [ "${CLAUDE_SWITCH_MODE:-}" = "select" ]; then
+  echo "$WINDOW"
 else
-  $TMUX_BIN display-popup -w80% -h80% -E "$TMUX_BIN attach-session -t 'claude:$WINDOW'"
+  exec env -u TMUX $TMUX_BIN attach-session -t "claude:=$WINDOW"
 fi

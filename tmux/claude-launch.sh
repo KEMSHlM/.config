@@ -2,6 +2,8 @@
 # claude-launch.sh - tmux `prefix + a` handler
 # Args: pane_current_command pane_pid pane_current_path pane_path session_name pane_tty [flags]
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 PANE_CMD="$1"
 PANE_PID="$2"
 LOCAL_PATH="$3"
@@ -72,7 +74,7 @@ if [ "$PANE_CMD" = "ssh" ] && [ "$SESSION_NAME" != "claude" ]; then
   tmux list-windows -t "claude" -F "#{window_name}" | grep -qF "$WINDOW" || \
     tmux new-window -t "claude" -n "$WINDOW" "$REMOTE_CMD"
 
-  tmux display-popup -w80% -h80% -E "tmux attach-session -t claude:$WINDOW"
+  tmux display-popup -w80% -h80% -E "$SCRIPT_DIR/claude-popup.sh $WINDOW"
 
 else
   # --- Local case (original behavior) ---
@@ -92,6 +94,6 @@ else
     tmux list-windows -t "claude" -F "#{window_name}" | grep -qF "$WINDOW" || \
       tmux new-window -t "claude" -n "$WINDOW" "$CLAUDE_CMD"
 
-    tmux display-popup -w80% -h80% -E "tmux attach-session -t claude:$WINDOW"
+    tmux display-popup -w80% -h80% -E "$SCRIPT_DIR/claude-popup.sh $WINDOW"
   fi
 fi
