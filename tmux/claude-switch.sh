@@ -1,17 +1,18 @@
 #!/bin/zsh
-# claude-switch.sh - claude session manager with y/n control
+# claude-switch.sh - claude session manager with preview and send keys
 # Args: session_name
 
 SESSION_NAME="${1:-}"
+TMUX_BIN=$(command -v tmux)
 
-if ! tmux has-session -t "claude" 2>/dev/null; then
-  tmux display-message "No claude session running"
+if ! $TMUX_BIN has-session -t "claude" 2>/dev/null; then
+  $TMUX_BIN display-message "No claude session running"
   exit 0
 fi
 
-CURRENT_WINDOW=$(tmux display-message -p -t claude '#{window_name}' 2>/dev/null)
+CURRENT_WINDOW=$($TMUX_BIN display-message -p -t claude '#{window_name}' 2>/dev/null)
 
-SELECTED=$(tmux list-windows -t claude -F "#{window_name} #{pane_current_command} #{pane_current_path}" | \
+SELECTED=$($TMUX_BIN list-windows -t claude -F "#{window_name} #{pane_current_command} #{pane_current_path}" | \
   while read name cmd dirpath; do
     if [ "$cmd" = "ssh" ]; then
       label="[remote] $name"
@@ -22,27 +23,28 @@ SELECTED=$(tmux list-windows -t claude -F "#{window_name} #{pane_current_command
     printf "claude:=%s\t%s %s\n" "$name" "$marker" "$label"
   done | \
   fzf \
+    --disabled \
     --delimiter='\t' \
     --with-nth=2 \
     --border rounded \
     --padding 1,2 \
-    --header $'  Claude Sessions\n  Enter: open  y: yes  n: no  ctrl-x: kill\n' \
+    --header $'  Claude Sessions\n  Enter: open  1/2/3: send  ctrl-x: kill\n' \
     --header-first \
-    --preview 'tmux capture-pane -t {1} -p -e -S -50 2>/dev/null' \
+    --preview "$TMUX_BIN capture-pane -t {1} -p -e -S - 2>/dev/null | tail -50" \
     --preview-window 'right:60%:wrap:border-left' \
-    --bind 'y:execute-silent(tmux send-keys -t {1} "y" Enter)' \
-    --bind 'n:execute-silent(tmux send-keys -t {1} "n" Enter)' \
-    --bind 'ctrl-x:execute-silent(tmux kill-window -t {1})+abort')
+    --bind "1:execute-silent($TMUX_BIN send-keys -t {1} '1' Enter)" \
+    --bind "2:execute-silent($TMUX_BIN send-keys -t {1} '2' Enter)" \
+    --bind "3:execute-silent($TMUX_BIN send-keys -t {1} '3' Enter)" \
+    --bind "ctrl-x:execute-silent($TMUX_BIN kill-window -t {1})+abort")
 
 [ -z "$SELECTED" ] && exit 0
 
-# field 1 is "claude:=window_name", extract window name
 WINDOW=$(echo "$SELECTED" | cut -f1 | sed 's/claude:=//')
 
 [ -z "$WINDOW" ] && exit 0
 
 if [ "$SESSION_NAME" = "claude" ]; then
-  tmux switch-client -t "claude:$WINDOW"
+  $TMUX_BIN switch-client -t "claude:$WINDOW"
 else
-  tmux display-popup -w80% -h80% -E "tmux attach-session -t 'claude:$WINDOW'"
+  $TMUX_BIN display-popup -w80% -h80% -E "$TMUX_BIN attach-session -t 'claude:$WINDOW'"
 fi
