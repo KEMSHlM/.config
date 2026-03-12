@@ -66,16 +66,6 @@ return {
     branch = "fix/image-rerender-on-buffer-switch",
     opts = {
       image = {},
-      styles = {
-        -- Override float window position for image/PDF preview
-        snacks_image = {
-          relative = "editor",
-          border = true,
-          focusable = false,
-          backdrop = false,
-          -- row/col omitted = centered; use e.g. row=0.1 to offset from top
-        },
-      },
     },
   },
 }
