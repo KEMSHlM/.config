@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # ~/.local にユーザー権限だけで以下を導入/更新:
-# - CLI: rg(fd), fd, fzf, lazygit
+# - CLI: rg, fd, fzf, lazygit, magick（ImageMagick）, gs（Ghostscript）
 # - uv（Python管理/超高速pip）, uvでPython本体, Neovim用pynvim（専用venv）
 # - nvm（~/.local/nvm）で Node & npm、Neovim用の npm 'neovim'
+# - claude（Claude Code）: 公式スタンドアロンインストーラーで導入
 # 既にあるものはスキップ（FORCE=1で上書き）。失敗しても続行。
 
 # ===== 設定（環境変数で上書き可）=====
@@ -263,6 +264,88 @@ install_lazygit() {
   rm -rf "$tmp"
 }
 
+install_imagemagick() {
+  local name=magick repo=ImageMagick/ImageMagick a url appdir appimg wrapper
+  a="$(arch)"
+  [ "$SKIP_IF_ANY" = "1" ] && already_any "$name" && {
+    info "magick exists ($(command -v magick)); skip"
+    return 0
+  }
+  [ "$FORCE" != "1" ] && already_local "$name" && {
+    info "magick already in ~/.local; skip"
+    return 0
+  }
+  case "$a" in
+  x86_64) url="$(latest_asset "$repo" 'ImageMagick-.*-x86_64\.AppImage')" ;;
+  arm64)  url="$(latest_asset "$repo" 'ImageMagick-.*-aarch64\.AppImage')" ;;
+  esac
+  [ -n "$url" ] || {
+    err "magick asset not found"
+    return 1
+  }
+  appdir="$APPS_DIR/imagemagick"
+  mkdir -p "$appdir"
+  appimg="$appdir/ImageMagick.AppImage"
+  info "download magick: $url"
+  dl "$url" "$appimg" || {
+    err "magick dl failed"
+    return 1
+  }
+  chmod 0755 "$appimg"
+  # FUSE なしで動くラッパー
+  wrapper="$appdir/magick"
+  cat >"$wrapper" <<'SH'
+#!/usr/bin/env sh
+APPIMAGE_EXTRACT_AND_RUN=1 exec "$(dirname "$(readlink -f "$0")")/ImageMagick.AppImage" "$@"
+SH
+  chmod 0755 "$wrapper"
+  link_bin "$wrapper" magick
+}
+
+install_ghostscript() {
+  local name=gs repo=ArtifexSoftware/ghostpdl a url tmp tdir binpath
+  a="$(arch)"
+  [ "$SKIP_IF_ANY" = "1" ] && already_any "$name" && {
+    info "gs exists ($(command -v gs)); skip"
+    return 0
+  }
+  [ "$FORCE" != "1" ] && already_local "$name" && {
+    info "gs already in ~/.local; skip"
+    return 0
+  }
+  case "$a" in
+  x86_64) url="$(latest_asset "$repo" 'ghostscript-.*linux.*x86_64.*\.tgz')" ;;
+  arm64)  url="$(latest_asset "$repo" 'ghostscript-.*linux.*aarch64.*\.tgz')" ;;
+  esac
+  [ -n "$url" ] || {
+    err "gs asset not found (ArtifexSoftware/ghostpdl)"
+    return 1
+  }
+  tmp="$(mktemp -d)"
+  tdir="$APPS_DIR/ghostscript"
+  mkdir -p "$tdir"
+  info "download gs: $url"
+  dl "$url" "$tmp/pkg.tgz" || {
+    err "gs dl failed"
+    rm -rf "$tmp"
+    return 1
+  }
+  tar -xzf "$tmp/pkg.tgz" -C "$tmp" || {
+    err "gs extract failed"
+    rm -rf "$tmp"
+    return 1
+  }
+  binpath="$(find "$tmp" -type f -name 'gs*' -perm -111 | grep -v '\.so' | head -n1)"
+  [ -n "$binpath" ] || {
+    err "gs binary not found"
+    rm -rf "$tmp"
+    return 1
+  }
+  cp "$binpath" "$tdir/gs" && chmod 0755 "$tdir/gs"
+  link_bin "$tdir/gs" gs
+  rm -rf "$tmp"
+}
+
 # ===== uv & Python（~/.local に固定）=====
 install_uv() {
   if have uv; then
@@ -398,6 +481,18 @@ install_nvm_and_node() {
       npm i -g tree-sitter-cli >/dev/null 2>&1 ||
       warn "npm tree-sitter-cli failed (continue)"
   fi
+}
+
+install_claude() {
+  if have claude; then
+    info "claude exists ($(command -v claude)); skip"
+    return 0
+  fi
+  info "install claude (standalone installer)"
+  curl -fsSL https://claude.ai/install.sh | bash || {
+    warn "claude install failed (continue)"
+    return 1
+  }
 }
 
 ensure_rc_line() {
@@ -541,7 +636,7 @@ PY
 
 report() {
   info "---- versions ----"
-  for c in rg fd fzf lazygit uv node npm; do
+  for c in rg fd fzf lazygit magick gs claude uv node npm; do
     if command -v "$c" >/dev/null 2>&1; then
       printf "%-8s %s\n" "$c" "$(command -v "$c")"
       "$c" --version 2>/dev/null | head -n1 || true
@@ -567,6 +662,8 @@ main() {
   install_fd || warn "fd install failed (continue)"
   install_fzf || warn "fzf install failed (continue)"
   install_lazygit || warn "lazygit install failed (continue)"
+  install_imagemagick || warn "imagemagick install failed (continue)"
+  install_ghostscript || warn "ghostscript install failed (continue)"
 
   install_uv || warn "uv install failed (continue)"
   have uv && install_python_with_uv || true
@@ -574,6 +671,7 @@ main() {
   install_luarocks_hererocks || warn "luarocks/hererocks setup failed (continue)"
 
   install_nvm_and_node || warn "nvm/node setup failed (continue)"
+  install_claude || warn "claude install failed (continue)"
 
   info "--- after ----"
   report
