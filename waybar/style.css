@@ -1,0 +1,169 @@
+/* Catppuccin Mocha palette */
+@define-color base       #1e1e2e;
+@define-color mantle     #181825;
+@define-color crust      #11111b;
+@define-color text       #cdd6f4;
+@define-color subtext1   #bac2de;
+@define-color subtext0   #a6adc8;
+@define-color overlay2   #9399b2;
+@define-color overlay1   #7f849c;
+@define-color overlay0   #6c7086;
+@define-color surface2   #585b70;
+@define-color surface1   #45475a;
+@define-color surface0   #313244;
+@define-color blue       #89b4fa;
+@define-color lavender   #b4befe;
+@define-color sapphire   #74c7ec;
+@define-color sky        #89dceb;
+@define-color teal       #94e2d5;
+@define-color green      #a6e3a1;
+@define-color yellow     #f9e2af;
+@define-color peach      #fab387;
+@define-color maroon     #eba0ac;
+@define-color red        #f38ba8;
+@define-color mauve      #cba6f7;
+@define-color pink       #f5c2e7;
+@define-color flamingo   #f2cdcd;
+@define-color rosewater  #f5e0dc;
+
+* {
+    font-family: "JetBrainsMono Nerd Font", "FontAwesome", sans-serif;
+    font-size: 13px;
+    min-height: 0;
+}
+
+window#waybar {
+    background: rgba(17, 17, 27, 0.85);
+    color: @text;
+    border-radius: 12px;
+    border: 1px solid @surface0;
+}
+
+tooltip {
+    background: @mantle;
+    border: 1px solid @surface0;
+    border-radius: 8px;
+}
+tooltip label {
+    color: @text;
+    padding: 4px;
+}
+
+/* Common module styling */
+#custom-launcher,
+#workspaces,
+#window,
+#clock,
+#tray,
+#pulseaudio,
+#network,
+#cpu,
+#memory,
+#battery,
+#custom-power {
+    padding: 0 10px;
+    margin: 4px 2px;
+    border-radius: 8px;
+    background: @surface0;
+    color: @text;
+}
+
+#custom-launcher {
+    background: @mauve;
+    color: @base;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 0 12px;
+}
+
+#workspaces {
+    padding: 0 4px;
+}
+
+#workspaces button {
+    padding: 0 8px;
+    margin: 2px 2px;
+    color: @overlay1;
+    background: transparent;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+#workspaces button:hover {
+    background: @surface1;
+    color: @text;
+}
+#workspaces button.active {
+    background: @mauve;
+    color: @base;
+}
+#workspaces button.urgent {
+    background: @red;
+    color: @base;
+}
+
+#window {
+    color: @subtext1;
+    font-style: italic;
+}
+#window.empty {
+    background: transparent;
+}
+
+#clock {
+    background: @lavender;
+    color: @base;
+    font-weight: bold;
+}
+
+#cpu {
+    color: @green;
+}
+#memory {
+    color: @sapphire;
+}
+#network {
+    color: @teal;
+}
+#network.disconnected {
+    color: @red;
+}
+#pulseaudio {
+    color: @peach;
+}
+#pulseaudio.muted {
+    color: @overlay1;
+}
+
+#battery {
+    color: @green;
+}
+#battery.warning:not(.charging) {
+    color: @yellow;
+}
+#battery.critical:not(.charging) {
+    color: @red;
+    animation: blink 1s steps(2) infinite;
+}
+#battery.charging {
+    color: @green;
+}
+
+#custom-power {
+    background: @red;
+    color: @base;
+    font-size: 14px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
+
+@keyframes blink {
+    to {
+        color: @base;
+        background-color: @red;
+    }
+}
