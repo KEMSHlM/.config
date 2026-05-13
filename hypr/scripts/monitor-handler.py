@@ -37,6 +37,14 @@ import time
 PRIMARY = "DP-1"
 FALLBACK = "HDMI-A-1"
 
+# HDR / wide-gamut parameters for DP-1. Mirrors hyprland.conf so re-applying
+# the keyword at runtime does not regress the display back to SDR/8-bit.
+PRIMARY_ARGS = (
+    "preferred, auto, auto, "
+    "bitdepth, 10, cm, hdredid, "
+    "sdrbrightness, 1.0, sdrsaturation, 1.0"
+)
+
 DEBOUNCE_S = 0.5            # coalesce event bursts
 SUPPRESS_AFTER_S = 2.0      # ignore events for this long after our hyprctl
 MIN_APPLY_INTERVAL_S = 1.0  # hard floor on apply frequency
@@ -56,7 +64,7 @@ def desired_state() -> dict[str, str]:
     if PRIMARY in monitors:
         return {
             FALLBACK: f"{FALLBACK}, disable",
-            PRIMARY: f"{PRIMARY}, preferred, auto, auto",
+            PRIMARY: f"{PRIMARY}, {PRIMARY_ARGS}",
         }
     return {FALLBACK: f"{FALLBACK}, preferred, auto, auto"}
 

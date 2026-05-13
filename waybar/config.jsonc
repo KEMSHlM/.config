@@ -17,6 +17,7 @@
     ],
     "modules-right": [
         "tray",
+        "custom/brightness",
         "pulseaudio",
         "network",
         "cpu",
@@ -128,5 +129,15 @@
         "format": "",
         "tooltip": false,
         "on-click": "hyprctl dispatch exit"
+    },
+
+    "custom/brightness": {
+        "exec": "/home/kemshim/.config/hypr/scripts/sdr-brightness.sh waybar",
+        "return-type": "json",
+        "interval": 2,
+        "format": " {}",
+        "on-click": "/home/kemshim/.config/hypr/scripts/sdr-brightness.sh pick",
+        "on-scroll-up": "/home/kemshim/.config/hypr/scripts/sdr-brightness.sh next",
+        "on-scroll-down": "/home/kemshim/.config/hypr/scripts/sdr-brightness.sh prev"
     }
 }
