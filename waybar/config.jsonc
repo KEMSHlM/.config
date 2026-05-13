@@ -6,6 +6,9 @@
     "margin-top": 6,
     "margin-left": 12,
     "margin-right": 12,
+    "start_hidden": true,
+    "on-sigusr1": "hide",
+    "on-sigusr2": "show",
 
     "modules-left": [
         "custom/launcher",
