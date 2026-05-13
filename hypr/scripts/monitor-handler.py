@@ -122,11 +122,15 @@ def main() -> None:
     buf = b""
     pending = False
     pending_deadline = 0.0
+    # configreloaded matters because `hyprctl reload` resets each monitor to
+    # its config-declared state — undoing any runtime keyword the handler had
+    # applied. Re-evaluate after every reload.
     monitor_event_prefixes = (
         b"monitoradded>>",
         b"monitorremoved>>",
         b"monitoraddedv2>>",
         b"monitorremovedv2>>",
+        b"configreloaded>>",
     )
 
     with sock:
@@ -151,6 +155,12 @@ def main() -> None:
                     line, buf = buf.split(b"\n", 1)
                     if not any(line.startswith(p) for p in monitor_event_prefixes):
                         continue
+                    # `hyprctl reload` reverts each monitor to its config
+                    # state, so what we previously applied is no longer
+                    # in effect. Forget our cached state to force re-apply.
+                    if line.startswith(b"configreloaded>>"):
+                        handler.last_applied = {}
+                        handler.last_apply_ts = 0.0
                     if now < handler.suppress_until:
                         continue
                     if not pending:
