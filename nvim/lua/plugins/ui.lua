@@ -208,4 +208,17 @@ return {
       },
     },
   },
+
+  {
+    "folke/snacks.nvim",
+    opts = function(_, opts)
+      -- When SNACKS_KITTY forces kitty, skip the XTVERSION terminal query
+      -- entirely: over ssh + tmux its response is not captured by TermResponse
+      -- and leaks into the first opened buffer as literal text ("tty(0.45.0)").
+      if vim.env.SNACKS_KITTY == "true" then
+        require("snacks.image.terminal")._terminal = { terminal = "kitty", version = "override" }
+      end
+      return opts
+    end,
+  },
 }

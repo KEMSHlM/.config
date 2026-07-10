@@ -6,6 +6,15 @@ if vim.env.TERM and vim.env.TERM:find("^tmux") and not vim.env.TMUX then
   end
 end
 
+-- Force kitty detection for Snacks.image. Runtime detection cannot work here:
+-- over SSH (with or without tmux in between) the XTVERSION query is answered by
+-- an intermediate tmux instead of the real terminal. Every terminal used with
+-- this config is kitty (TERM is xterm-kitty locally, tmux-256color via tmux/ssh),
+-- so hardcode the override for those cases.
+if not vim.env.SNACKS_KITTY and vim.env.TERM and (vim.env.TERM:find("kitty") or vim.env.TERM:find("^tmux")) then
+  vim.env.SNACKS_KITTY = "true"
+end
+
 vim.g.mapleader = " "
 
 vim.scriptencoding = "utf-8"
