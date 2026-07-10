@@ -216,7 +216,15 @@ return {
       -- entirely: over ssh + tmux its response is not captured by TermResponse
       -- and leaks into the first opened buffer as literal text ("tty(0.45.0)").
       if vim.env.SNACKS_KITTY == "true" then
-        require("snacks.image.terminal")._terminal = { terminal = "kitty", version = "override" }
+        local terminal = require("snacks.image.terminal")
+        terminal._terminal = { terminal = "kitty", version = "override" }
+        -- _detect() normally also installs the tmux passthrough wrapper;
+        -- replicate it here or raw graphics data gets dropped by tmux.
+        if vim.env.TMUX then
+          terminal.transform = function(data)
+            return ("\027Ptmux;" .. data:gsub("\027", "\027\027")) .. "\027\\"
+          end
+        end
       end
       return opts
     end,
