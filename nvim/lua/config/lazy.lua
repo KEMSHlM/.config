@@ -9,14 +9,17 @@ vim.opt.rtp:prepend(vim.env.LAZY or lazypath)
 require("lazy").setup({
   spec = {
     -- add LazyVim and import its plugins
+    -- NOTE: use "catppuccin-mocha", not "catppuccin": Neovim 0.12 bundles a
+    -- static colors/catppuccin.vim in $VIMRUNTIME that shadows the plugin
+    -- (and ignores transparent_background).
     { "LazyVim/LazyVim", import = "lazyvim.plugins", opts = {
-      colorscheme = "catppuccin",
+      colorscheme = "catppuccin-mocha",
     } },
     -- import any extras modules here
     { import = "lazyvim.plugins.extras.ai.copilot" },
     { import = "lazyvim.plugins.extras.linting.eslint" },
     { import = "lazyvim.plugins.extras.formatting.prettier" },
-    { import = "lazyvim.plugins.extras.formatting.biome" },
+    { import = "lazyvim.plugins.extras.lang.typescript.biome" },
     { import = "lazyvim.plugins.extras.coding.blink" },
     { import = "lazyvim.plugins.extras.lang.typescript" },
     { import = "lazyvim.plugins.extras.lang.json" },
@@ -39,7 +42,7 @@ require("lazy").setup({
     version = false, -- always use the latest git commit
     -- version = "*", -- try installing the latest stable version for plugins that support semver
   },
-  install = { colorscheme = { "catppuccin" } },
+  install = { colorscheme = { "catppuccin-mocha" } },
   checker = { enabled = true }, -- automatically check for plugin updates
   performance = {
     rtp = {
